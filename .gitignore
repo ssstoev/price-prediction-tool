@@ -1,0 +1,40 @@
+# VS Code
+.vscode/
+
+# Environment & secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data files (large CSVs — store in DB, not git)
+data/*.csv
+
+# MLflow local artifacts & DB
+mlruns/
+mlartifacts/
+mlflow.db
+api/mlflow.db
+model/explore/mlruns/
+model/explore/mlflow.db
+
+# OS
+.DS_Store
+Thumbs.db
