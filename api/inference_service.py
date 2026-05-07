@@ -34,6 +34,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 class PredictRequest(BaseModel):
     size_m2: float 
     nr_of_rooms: int 
