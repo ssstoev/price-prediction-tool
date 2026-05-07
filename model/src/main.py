@@ -16,19 +16,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# SUPABASE_HOST     = os.getenv("SUPABASE_HOST")
-# SUPABASE_PORT     = int(os.getenv("SUPABASE_PORT", 5432))
-# SUPABASE_DB       = os.getenv("SUPABASE_DB")
-# SUPABASE_USER     = os.getenv("SUPABASE_USER")
-# SUPABASE_PASSWORD = os.getenv("SUPABASE_PASSWORD")
-
-# MLFLOW_TRACKING_URI = (
-#     f"postgresql+psycopg2://{SUPABASE_USER}:{SUPABASE_PASSWORD}"
-#     f"@{SUPABASE_HOST}:{SUPABASE_PORT}/{SUPABASE_DB}"
-#     f"?options=-csearch_path%3Dmlflow"
-# )
-
-mlflow.set_tracking_uri("http://localhost:5000")
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 # setup basic log messages
 logging.basicConfig(
