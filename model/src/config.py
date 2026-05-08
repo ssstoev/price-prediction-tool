@@ -2,18 +2,16 @@ from xgboost import XGBRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 
-# MLFLOW_TRACKING_URI = "http://127.0.0.1:5000/"
-
 # We experiment for different target variables
 EXPERIMENTS = {
-    "real-estate-price-prediction-new-s3": {
+    "real-estate-total-price-v2": {
         "target_col": "total_price_eur",
         "target_transform": "log",
         "drop_before_features": [],
         "registered_model_name": "RealEstateTotalPrice",
     },
 
-    "real-estate-price-per-m2-new-s3": {
+    "real-estate-price-per-m2-v2": {
         "target_col": "price_m2_eur",
         "target_transform": "log",
         "drop_before_features": [],
