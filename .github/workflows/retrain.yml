@@ -2,7 +2,7 @@ name: Retrain Models
 
 on:
   schedule:
-    - cron: "0 23 * * *"   # every day at 23:00 UTC = 02:00 GMT+3
+    - cron: "0 23 * * 0"   # every Sunday at 23:00 UTC = Monday 02:00 GMT+3
   workflow_dispatch:        # manual trigger from GitHub UI
 
 jobs:
@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      DEV_MODE: "false"
       MLFLOW_TRACKING_URI:       ${{ secrets.MLFLOW_TRACKING_URI }}
       MLFLOW_S3_ENDPOINT_URL:    ${{ secrets.MLFLOW_S3_ENDPOINT_URL }}
       AWS_DEFAULT_REGION:        ${{ secrets.AWS_DEFAULT_REGION }}
@@ -27,6 +28,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements-training.txt') }}
+          restore-keys: pip-
 
       - name: Install dependencies
         run: pip install -r requirements.txt
