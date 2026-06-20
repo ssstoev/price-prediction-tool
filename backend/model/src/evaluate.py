@@ -18,7 +18,7 @@ def evaluate_model(X_test, y_test, trained_model):
     }
     return eval_dict
 
-def pick_best_model(experiment_name: str, registered_model_name: str, metric: str = "test_rmse") -> str:
+def pick_best_model(experiment_name: str, registered_model_name: str, metric: str = "cv_rmse") -> str:
     try:
         runs = mlflow.search_runs(
             experiment_names=[experiment_name],
@@ -27,7 +27,9 @@ def pick_best_model(experiment_name: str, registered_model_name: str, metric: st
             max_results=1
         )
         if runs.empty:
-            raise ValueError(f"No completed runs found for experiment '{experiment_name}'.")
+            raise ValueError(
+                f"No completed runs with metric '{metric}' found for experiment '{experiment_name}'."
+            )
 
         best_run_id = runs.iloc[0].run_id
         model_uri = f"runs:/{best_run_id}/model"

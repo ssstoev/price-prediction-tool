@@ -25,12 +25,17 @@ FEATURE_SETS = {
     "size_only":          ["size_m2"],
     "neighbourhood_only": ["neighbourhood"],
     "size_neighbourhood": ["size_m2", "neighbourhood"],
-    "no_size_no_neighbourhood": ["nr_of_rooms", "total_floors", "appartment_floor",
-                                  "is_first_floor", "is_last_floor", "includes_parking",
-                                  "near_public_transport", "furnished", "new_building", "akt16"],
-    "all":                ["size_m2", "nr_of_rooms", "total_floors", "appartment_floor",
-                           "neighbourhood", "is_first_floor", "is_last_floor", "includes_parking",
-                           "near_public_transport", "furnished", "new_building", "akt16"],
+
+    "no_size_no_neighbourhood": ["nr_of_rooms", "floor", "building_total_floors",
+                                  "is_first_floor", "is_last_floor", "is_furnished", "near_public_transport"],
+    "all":                ["size_m2", "nr_of_rooms", "floor","building_total_floors",
+                           "neighbourhood", "is_first_floor", "is_last_floor","is_furnished", "near_public_transport"],
+    # "no_size_no_neighbourhood": ["nr_of_rooms", "total_floors", "appartment_floor",
+    #                               "is_first_floor", "is_last_floor", "includes_parking",
+    #                               "near_public_transport", "furnished", "new_building", "akt16"],
+    # "all":                ["size_m2", "nr_of_rooms", "total_floors", "appartment_floor",
+    #                        "neighbourhood", "is_first_floor", "is_last_floor", "includes_parking",
+    #                        "near_public_transport", "furnished", "new_building", "akt16"],
 }
 
 # DEV_MODE: small grids and fewer CV folds for fast iteration. Set to False for full search.
@@ -67,7 +72,6 @@ MODELS = [
     },
 ]
 
-NUMERIC = {"size_m2", "nr_of_rooms", "total_floors", "appartment_floor"}
+NUMERIC = {"size_m2", "nr_of_rooms", "floor", "building_total_floors", "appartment_floor"}
 CATEGORICAL = {"neighbourhood"}
-BOOLEAN = {"is_first_floor", "is_last_floor", "includes_parking", "near_public_transport", "furnished", 
-                        "new_building", "akt16"}
+BOOLEAN = {"is_first_floor", "is_last_floor", "near_public_transport", "is_furnished"}

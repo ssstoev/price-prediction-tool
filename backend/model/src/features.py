@@ -25,6 +25,7 @@ def build_target(df: pd.DataFrame, target_col: str):
     """
 
     df = df.copy()
+    df[target_col] = pd.to_numeric(df[target_col], errors="coerce")
     df = df[np.isfinite(df[target_col]) & (df[target_col] > 0)]
     df[f"log_{target_col}"] = np.log(df[target_col])
 

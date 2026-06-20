@@ -13,11 +13,8 @@ interface FormState {
   floor: string;
   totalFloors: string;
   neighbourhood: string;
-  hasParking: boolean;
   furnished: boolean;
   nearTransport: boolean;
-  newBuilding: boolean;
-  akt16: boolean;
 }
 
 interface PredictionResult {
@@ -60,11 +57,8 @@ interface Translations {
   floor: string;
   totalFloors: string;
   neighbourhood: string;
-  hasParking: string;
   furnished: string;
   nearTransport: string;
-  newBuilding: string;
-  akt16: string;
   submit: string;
   calculating: string;
   required: string;
@@ -84,11 +78,8 @@ const translations: Record<Language, Translations> = {
     floor: 'Apartment Floor',
     totalFloors: 'Total Floors in Building',
     neighbourhood: 'Neighbourhood',
-    hasParking: 'Includes Parking',
     furnished: 'Furnished',
     nearTransport: 'Near Public Transport',
-    newBuilding: 'New Building',
-    akt16: 'Act 16 (Completed)',
     submit: 'Get Valuation',
     calculating: 'Calculating...',
     required: 'Required',
@@ -157,11 +148,8 @@ const translations: Record<Language, Translations> = {
     floor: 'Етаж на апартамента',
     totalFloors: 'Общо етажи в сградата',
     neighbourhood: 'Квартал',
-    hasParking: 'Включено паркомясто',
     furnished: 'Обзаведен',
     nearTransport: 'Близо до транспорт',
-    newBuilding: 'Нова сграда',
-    akt16: 'Акт 16 (Завършен)',
     submit: 'Изчисли оценка',
     calculating: 'Изчисляване...',
     required: 'Задължително',
@@ -403,11 +391,8 @@ export default function PropertyValuation() {
     floor: '',
     totalFloors: '',
     neighbourhood: '',
-    hasParking: false,
     furnished: false,
     nearTransport: false,
-    newBuilding: false,
-    akt16: false,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
@@ -454,16 +439,13 @@ export default function PropertyValuation() {
       const data = await callInferenceModel({
         size_m2: parseInt(formState.size),
         nr_of_rooms: parseInt(formState.rooms),
-        total_floors: totalFloors,
-        appartment_floor: floor,
+        floor: floor,
+        building_total_floors: totalFloors,
         neighbourhood: formState.neighbourhood,
         is_first_floor: floor === 1 ? 1 : 0,
         is_last_floor: floor === totalFloors ? 1 : 0,
-        includes_parking: formState.hasParking ? 1 : 0,
         near_public_transport: formState.nearTransport ? 1 : 0,
-        furnished: formState.furnished ? 1 : 0,
-        new_building: formState.newBuilding ? 1 : 0,
-        akt16: formState.akt16 ? 1 : 0,
+        is_furnished: formState.furnished ? 1 : 0,
       });
 
       setResult({ price_low: data.lower_bound, price_high: data.upper_bound });
@@ -551,12 +533,6 @@ export default function PropertyValuation() {
           {/* Toggle Switches */}
           <div className="mt-6 border-t border-[#E0DCD7] pt-6">
             <Toggle
-              label={t.hasParking}
-              name="hasParking"
-              checked={formState.hasParking}
-              onChange={handleToggleChange}
-            />
-            <Toggle
               label={t.furnished}
               name="furnished"
               checked={formState.furnished}
@@ -566,18 +542,6 @@ export default function PropertyValuation() {
               label={t.nearTransport}
               name="nearTransport"
               checked={formState.nearTransport}
-              onChange={handleToggleChange}
-            />
-            <Toggle
-              label={t.newBuilding}
-              name="newBuilding"
-              checked={formState.newBuilding}
-              onChange={handleToggleChange}
-            />
-            <Toggle
-              label={t.akt16}
-              name="akt16"
-              checked={formState.akt16}
               onChange={handleToggleChange}
             />
           </div>

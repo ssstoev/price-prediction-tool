@@ -3,16 +3,13 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
 export interface criteriaParams {
     size_m2: number;
     nr_of_rooms: number;
-    total_floors: number;
-    appartment_floor: number;
+    floor: number;
+    building_total_floors: number;
     neighbourhood: string,
     is_first_floor: number,
     is_last_floor: number,
-    includes_parking: number,
-    near_public_transport: number,
-    furnished: number,
-    new_building: number,
-    akt16: number
+    is_furnished: number,
+    near_public_transport: number
 
 }
 

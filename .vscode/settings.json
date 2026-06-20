@@ -1,0 +1,12 @@
+{
+    "python.defaultInterpreterPath": "D:\\venvs\\datasci\\Scripts\\python.exe",
+    "python.analysis.extraPaths": [
+        "./backend",
+        "./backend/model/src"
+    ],
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.env.windows": {
+        "VIRTUAL_ENV": "D:\\venvs\\datasci",
+        "PATH": "D:\\venvs\\datasci\\Scripts;${env:PATH}"
+    }
+}

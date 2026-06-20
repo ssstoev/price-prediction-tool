@@ -7,11 +7,7 @@ load_dotenv()
 # ─────────────────────────────────────────────
 # CONFIGURATION — loaded from .env
 # ─────────────────────────────────────────────
-SUPABASE_HOST     = os.getenv("SUPABASE_HOST")
-SUPABASE_PORT     = int(os.getenv("SUPABASE_PORT", 5432))
-SUPABASE_DB       = os.getenv("SUPABASE_DB")
-SUPABASE_USER     = os.getenv("SUPABASE_USER")
-SUPABASE_PASSWORD = os.getenv("SUPABASE_PASSWORD")
+NEON_DATABASE_URL = os.getenv("NEON_DATABASE_URL")
 # ─────────────────────────────────────────────
 
 CREATE_TABLE_SQL = """
@@ -54,15 +50,8 @@ CREATE_TABLE_SQL = """
 def create_table():
     conn = None
     try:
-        print("Connecting to Supabase PostgreSQL...")
-        conn = psycopg2.connect(
-            host=SUPABASE_HOST,
-            port=SUPABASE_PORT,
-            dbname=SUPABASE_DB,
-            user=SUPABASE_USER,
-            password=SUPABASE_PASSWORD,
-            sslmode="require"           # Supabase requires SSL
-        )
+        print("Connecting to Neon PostgreSQL...")
+        conn = psycopg2.connect(NEON_DATABASE_URL)
         cur = conn.cursor()
 
         print("Creating table 'ads_appartments'...")

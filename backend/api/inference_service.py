@@ -7,11 +7,11 @@ import pandas as pd
 import mlflow
 import numpy as np
 import os
-from dotenv import load_dotenv
+from mlflow_settings import get_mlflow_tracking_uri, load_backend_env
 
-load_dotenv()
+load_backend_env()
 
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000/")
+MLFLOW_TRACKING_URI = get_mlflow_tracking_uri()
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:8080").split(",") #Cross-Origin Resource Sharing
 
 models = {}  # populated at startup
@@ -41,16 +41,13 @@ async def health():
 class PredictRequest(BaseModel):
     size_m2: float 
     nr_of_rooms: int 
-    total_floors: int 
-    appartment_floor: int 
+    floor: int 
+    building_total_floors: int 
     neighbourhood: str 
     is_first_floor: int 
     is_last_floor: int 
-    includes_parking: int
+    is_furnished: int 
     near_public_transport: int 
-    furnished: int 
-    new_building: int 
-    akt16: int
 
 class PredictionResponse(BaseModel):
     log_result: float
