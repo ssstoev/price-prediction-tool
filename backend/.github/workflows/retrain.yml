@@ -11,16 +11,12 @@ jobs:
 
     env:
       DEV_MODE: "false"
+      # VPS MLflow server (proxied through Nginx with basic auth)
       MLFLOW_TRACKING_URI:       ${{ secrets.MLFLOW_TRACKING_URI }}
-      MLFLOW_S3_ENDPOINT_URL:    ${{ secrets.MLFLOW_S3_ENDPOINT_URL }}
-      AWS_DEFAULT_REGION:        ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID:         ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY:     ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      SUPABASE_HOST:             ${{ secrets.SUPABASE_HOST }}
-      SUPABASE_PORT:             ${{ secrets.SUPABASE_PORT }}
-      SUPABASE_DB:               ${{ secrets.SUPABASE_DB }}
-      SUPABASE_USER:             ${{ secrets.SUPABASE_USER }}
-      SUPABASE_PASSWORD:         ${{ secrets.SUPABASE_PASSWORD }}
+      MLFLOW_TRACKING_USERNAME:  ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD:  ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+      # Neon database for training data (used by data_load.py)
+      NEON_DATABASE_URL:         ${{ secrets.NEON_DATABASE_URL }}
 
     steps:
       - uses: actions/checkout@v4
@@ -33,11 +29,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: pip-${{ hashFiles('requirements-training.txt') }}
+          key: pip-${{ hashFiles('backend/requirements.txt') }}
           restore-keys: pip-
 
       - name: Install dependencies
+        working-directory: backend
         run: pip install -r requirements.txt
 
       - name: Run training
+        working-directory: backend
         run: python model/src/main.py

@@ -23,7 +23,8 @@ def build_target(df: pd.DataFrame, target_col: str):
     Returns:
         Tuple of cleaned dataframe and log transformation of target column
     """
-
+    # clean the target column
+    # leave finite & positive values and perform log transform
     df = df.copy()
     df[target_col] = pd.to_numeric(df[target_col], errors="coerce")
     df = df[np.isfinite(df[target_col]) & (df[target_col] > 0)]
@@ -33,7 +34,7 @@ def build_target(df: pd.DataFrame, target_col: str):
     return df, target_transformed
 
 def build_train_test_data(df: pd.DataFrame, target_col: str, feature_set: list[str], test_size: float = 0.2):
-    '''Perform train test split'''
+    '''Perform train test split for a specific feature set'''
     X = df[feature_set]
     y = df[target_col]
 
@@ -51,6 +52,7 @@ def build_column_transformer_pipeline(feature_cols: list) -> Pipeline:
     bool_ = [f for f in feature_cols if f in BOOLEAN]
 
     transformers = []
+    # WIP: try with different imputation techniques - e.g. kNN
     if num:   transformers.append(("num", Pipeline([("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]), num))
     if cat:   transformers.append(("cat", TargetEncoder(), cat))
     if bool_: transformers.append(("bool", SimpleImputer(strategy="most_frequent"), bool_))

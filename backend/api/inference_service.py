@@ -1,12 +1,15 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 import traceback
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import mlflow
 import numpy as np
-import os
+
+import sys, os
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from mlflow_settings import get_mlflow_tracking_uri, load_backend_env
 
 load_backend_env()
@@ -16,7 +19,7 @@ CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:8080").split(",") #Cr
 
 models = {}  # populated at startup
 
-#run this setup code once when the server boots, then keep the result alive for everyone to use.
+# run this setup code once when the server boots, then keep the result alive for everyone to use.
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
@@ -39,15 +42,24 @@ async def health():
     return {"status": "ok"}
 
 class PredictRequest(BaseModel):
-    size_m2: float 
-    nr_of_rooms: int 
-    floor: int 
-    building_total_floors: int 
+    size_m2: float = Field(..., gt=0, le=1000)
+    nr_of_rooms: int = Field(..., gt=0, le=10)
+    floor: int = Field(..., ge=0, le=50)
+    building_total_floors: int = Field(..., ge=0, le=50)
+
+    # WIP: Change below to bool but look what dtype the model expects 
     neighbourhood: str 
     is_first_floor: int 
     is_last_floor: int 
     is_furnished: int 
     near_public_transport: int 
+
+    # make sure the total floors >= appartment floor
+    @model_validator(mode="after")
+    def check_floor_validity(self):
+        if self.floor > self.building_total_floors:
+            raise ValueError("floor cannot exceed building_total_floors")
+        return self
 
 class PredictionResponse(BaseModel):
     log_result: float

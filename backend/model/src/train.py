@@ -7,6 +7,7 @@ import mlflow.sklearn
 from config import CV_FOLDS, FEATURE_SETS, MODELS
 from evaluate import evaluate_model
 from features import build_column_transformer_pipeline, build_target, build_train_test_data
+from mlflow_settings import get_mlflow_artifact_root
 
 import logging as log
 log.getLogger("mlflow.sklearn").setLevel(log.ERROR)
@@ -31,7 +32,7 @@ def train_model(X_train, y_train, model, params, col_transformer, cv_folds=5):
     return best_estimator, cv_rmse
 
 def run_trial(model_cfg, f_set_name, col_transformer_pipeline, X_train, y_train):
-
+    '''Train a specific model with specific feature_sets'''
     try:
         log.info(f"Starting {model_cfg['run_name']} model")
         with mlflow.start_run(run_name=f"{model_cfg['run_name']}_{f_set_name}"):
@@ -116,6 +117,19 @@ def log_final_test_eval(exp_name, target_transformed, df):
     print("-" * 95)
 
 def run_experiment(exp_name, exp_values, df):
+    '''We have 1 experiment per target feature - total price & price per sqm'''
+
+    # fetch and check if artifact storage path exists
+    artifact_root = get_mlflow_artifact_root()
+    if artifact_root:
+        client = mlflow.MlflowClient()
+        # if it doesn't exist, create experiment with custom artifact storage path
+        # if we don't include this mlflow will create the storage to its default location (ignoring custom path) 
+        if client.get_experiment_by_name(exp_name) is None:
+            client.create_experiment(exp_name, artifact_location=f"{artifact_root}/{exp_name}")
+
+    # activate the experiment as context for the subsequent runs
+    # it says "log in this experiment" 
     mlflow.set_experiment(experiment_name=exp_name)
     print("="*95)
     print(f"Starting experiment {exp_name}...")

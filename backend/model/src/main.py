@@ -1,27 +1,20 @@
 import os
 import sys
-os.environ["OMP_NUM_THREADS"] = "1"
-os.environ["MKL_NUM_THREADS"] = "1"
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-os.environ["NUMEXPR_NUM_THREADS"] = "1"
-os.environ["LOKY_MAX_CPU_COUNT"] = "1"
 
-import mlflow
 from pathlib import Path
 
 _BACKEND_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 
-from mlflow_settings import get_mlflow_tracking_uri
+from mlflow_settings import configure_mlflow
 from config import EXPERIMENTS
 from data_load import load_data
 from evaluate import pick_best_model
 from train import run_experiment
 import logging
 
-MLFLOW_TRACKING_URI = get_mlflow_tracking_uri()
-mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+configure_mlflow()
 
 # setup basic log messages
 logging.basicConfig(
@@ -31,10 +24,12 @@ logging.basicConfig(
 )
 
 def main():
+    # 1. Load the data
     df = load_data()
-    # print(df)
     if df is None:
         raise RuntimeError("load_data() returned None — check DB credentials and connection.")
+
+    # 2. Run the experiments with different settings
     for exp_name, exp_vals in EXPERIMENTS.items():
         run_experiment(exp_name, exp_vals, df)
 

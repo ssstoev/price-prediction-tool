@@ -19,6 +19,14 @@ def evaluate_model(X_test, y_test, trained_model):
     return eval_dict
 
 def pick_best_model(experiment_name: str, registered_model_name: str, metric: str = "cv_rmse") -> str:
+    uri = mlflow.get_tracking_uri()
+    if not uri or uri.startswith("file://"):
+        raise RuntimeError(
+            f"MLflow is pointing at a local store ({uri!r}). "
+            "Call configure_mlflow() before pick_best_model()."
+        )
+    log.info("pick_best_model: using tracking URI %s", uri)
+    
     try:
         runs = mlflow.search_runs(
             experiment_names=[experiment_name],
