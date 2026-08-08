@@ -10,7 +10,7 @@ DEFAULT_MLFLOW_DIR = BACKEND_ROOT / "model" / "mlruns"
 
 
 def load_backend_env() -> None:
-    load_dotenv(ENV_PATH)
+    load_dotenv(ENV_PATH, override=True)
 
 
 def get_mlflow_tracking_uri() -> str:
