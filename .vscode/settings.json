@@ -8,5 +8,6 @@
     "terminal.integrated.env.windows": {
         "VIRTUAL_ENV": "D:\\venvs\\datasci",
         "PATH": "D:\\venvs\\datasci\\Scripts;${env:PATH}"
-    }
+    },
+    "python.terminal.useEnvFile": true
 }
