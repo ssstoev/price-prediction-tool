@@ -152,7 +152,7 @@ Apartment prices in Sofia are right-skewed (a small number of luxury listings pu
 
 ## API Reference
 
-Base URL: `http://localhost:8000`
+Base URL: `https://price-prediction-tool.vercel.app/`
 
 ### `GET /health`
 Returns `{"status": "ok"}`.
