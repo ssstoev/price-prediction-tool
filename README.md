@@ -136,13 +136,33 @@ Training evaluates five feature-set configurations to quantify each feature grou
 |---|---|
 | Decision Tree | `max_depth`, `min_samples_leaf` |
 | Random Forest | `n_estimators`, `max_depth`, `min_samples_leaf` |
-| **XGBoost** ✓ | `n_estimators`, `max_depth`, `learning_rate`, `colsample_bytree` |
+| Random Forest ✓ | `n_estimators`, `max_depth`, `min_samples_leaf` |
+| XGBoost | `n_estimators`, `max_depth`, `learning_rate`, `colsample_bytree` |
 
-All models are tuned with **GridSearchCV** (5-fold CV, scored on RMSE). The run with the lowest `cv_rmse` across all combinations is automatically registered as the production model in the MLflow Model Registry.
+All models are tuned with **GridSearchCV** (5-fold CV, scored on RMSE). Within a training batch, the run with the lowest `cv_rmse` across all model/feature-set combinations is registered as the production model in the MLflow Model Registry.
 
-### Why XGBoost
+### Leaderboard (best model per feature set)
 
-XGBoost consistently produced the lowest cross-validation RMSE across all feature-set ablations. Random Forest achieved comparable accuracy on the full feature set but was ~4× slower to train and gave no improvement in generalisation; Decision Trees underfit significantly without ensemble aggregation.
+Cross-validation results for the best model of each feature set, ranked by CV RMSE (log scale). Target variable: **price per m²** (`price_m2_eur`, experiment `real-estate-price-per-m2-v1`). The EUR columns are in €/m² and averaged over the CV folds.
+
+**Source:** training batch `20261025T153903Z_68612c77` (tag `training_batch_id` in MLflow).
+
+| Feature set | Best model | CV RMSE (log) | CV MAE (€) | CV RMSE (€) |
+|---|---|---|---|---|
+| `all` | Random Forest | 0.1683 | 320.76 | 452.69 |
+| `size_neighbourhood` | Random Forest | 0.1794 | 347.36 | 485.76 |
+| `neighbourhood_only` | XGBoost | 0.1984 | 378.95 | 535.86 |
+| `no_size_no_neighbourhood` | Random Forest | 0.2165 | 415.72 | 586.73 |
+| `size_only` | Random Forest | 0.2227 | 445.82 | 610.88 |
+
+### Interpretation
+
+- **Best model:** Random Forest on the `all` feature set has the lowest CV error for price per m² (log RMSE 0.1683, ≈ €453/m² RMSE) and is the `RealEstatePricePerSqm` model registered from this batch. It wins four of the five feature sets; XGBoost wins only `neighbourhood_only`, so neither model is clearly dominant in this comparison.
+- **Every feature group helps:** error rises steadily as features are removed. Going from `all` to `size_only` increases log RMSE by about 32% (0.1683 → 0.2227) and EUR RMSE by about 35% (€453 → €611/m²).
+- **Location is the strongest single signal:** `neighbourhood_only` (0.1984) beats `size_only` (0.2227), so knowing the neighbourhood is more informative than knowing the size.
+- **The two are complementary:** `size_neighbourhood` (0.1794) improves on either alone, and the remaining features (rooms, floors, furnished, public transport) add a further gain to 0.1683.
+- **Other features carry signal too:** `no_size_no_neighbourhood` (0.2165) still outperforms `size_only`, so the remaining features are informative on their own.
+- **Caveats:** these are cross-validation scores from a single batch, not holdout scores, and the best result is picked from many parameter combinations, so they are slightly optimistic. Differences of a few hundredths in log RMSE (e.g. between the top two rows) should be confirmed with the final test-set evaluation (`FINAL_TEST_*` runs) before drawing strong conclusions.
 
 ### Why log-transform the target
 
